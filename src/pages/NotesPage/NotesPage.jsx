@@ -1,12 +1,35 @@
 import NoteForm from '../../components/NoteForm/NoteForm'
 import NoteItem from '../../components/NoteItem/NoteItem'
+import {useState, useEffect} from 'react'
+import { getUser } from '../../utilities/users-service';
+import { fetchUserNotes, addNote } from '../../utilities/notes-api';
 
-export default function OrderHistoryPage() {
+
+export default function NotesPage() {
   const [notes, setNotes] = useState([]);
+  const user = getUser();
 
-  //backend logic to fetch notes for user
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const data = await fetchUserNotes(user._id);
+        setNotes(data);
+      } catch (error) {
+        console.error('Error fetching notes:', error);
+      }
+    };
 
-  //backend logic to save note to database
+    fetchNotes();
+  }, []);
+
+  const handleAddNote = async (note) => {
+    try {
+      const data = await addNote(note);
+      setNotes([...notes, data]);
+    } catch (error) {
+      console.error('Error adding note:', error);
+    }
+  };
 
   return(
     <div>
