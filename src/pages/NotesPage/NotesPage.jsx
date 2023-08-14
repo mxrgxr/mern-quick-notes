@@ -7,6 +7,7 @@ import { fetchUserNotes, addNote } from '../../utilities/notes-api';
 
 export default function NotesPage() {
   const [notes, setNotes] = useState([]);
+  const [sortAscending, setSortAscending] = useState(true);
   const user = getUser();
 
   useEffect(() => {
@@ -31,16 +32,27 @@ export default function NotesPage() {
     }
   };
 
-  return(
+  const toggleSortOrder = () => {
+    setSortAscending(!sortAscending);
+  };
+
+  return (
     <div>
       <NoteForm onAddNote={handleAddNote} />
+      <button onClick={toggleSortOrder}>
+        {sortAscending ? "Sort by Descending" : "Sort by Ascending"}
+      </button>
       {notes.length === 0 ? (
         <p>No Notes Yet</p>
       ) : (
-        notes.map((note) => (
-          <NoteItem key={note._id} note={note} />
-        ))
+        notes
+          .sort((a, b) =>
+            sortAscending
+              ? a.createdAt.localeCompare(b.createdAt)
+              : b.createdAt.localeCompare(a.createdAt)
+          )
+          .map((note) => <NoteItem key={note._id} note={note} />)
       )}
     </div>
-  )
+  );
 }
